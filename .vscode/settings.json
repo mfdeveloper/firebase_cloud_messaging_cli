@@ -1,0 +1,7 @@
+{
+    "editor.fontFamily": "JetBrains Mono, Consolas, 'Courier New', monospace",
+    "editor.lineHeight": 22,
+    "editor.fontWeight": "300",
+    "editor.semanticHighlighting.enabled": true,
+    "workbench.colorTheme": "Visual Studio 2019 Dark",
+}

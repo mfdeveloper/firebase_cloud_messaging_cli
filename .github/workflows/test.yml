@@ -1,0 +1,27 @@
+name: Shell Script > Unit Tests
+
+on:
+  push:
+    branches:
+      - shell-script-cli
+  pull_request:
+    branches:
+      - shell-script-cli
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Make scripts executable
+        run: chmod +x scripts/fcm.sh scripts/tests/*.sh
+
+      - name: Run unit tests
+        run: ./scripts/tests/test_fcm.sh
+
+      - name: Run coverage report
+        run: ./scripts/tests/test_fcm.sh --coverage --output terminal
+

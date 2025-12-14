@@ -6,6 +6,7 @@
 	"recommendations": [
 		"mads-hartmann.bash-ide-vscode",
 		"l13rary.l13-sh-snippets",
+		"github.vscode-github-actions",
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": []

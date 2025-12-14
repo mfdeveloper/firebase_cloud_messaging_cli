@@ -393,14 +393,106 @@ The test suite covers:
 =============================================================================
 ```
 
+## CI/CD
+
+### GitHub Actions
+
+Unit tests run automatically on:
+- Push to `shell-script-cli` branch
+- Pull requests targeting `shell-script-cli` branch
+
+The workflow is defined in `.github/workflows/test.yml`.
+
+### Running Workflows Locally
+
+You can test GitHub Actions workflows locally using [act](https://github.com/nektos/act) before pushing to the repository.
+
+#### Prerequisites
+
+1. **Install Docker** - `act` uses Docker to run workflows
+   
+   ```bash
+   # macOS
+   brew install --cask docker
+   
+   # Ubuntu/Debian
+   sudo apt install docker.io
+   ```
+
+2. **Install act**
+
+   ```bash
+   # macOS
+   brew install act
+   
+   # Linux (via curl)
+   curl -s https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+   ```
+
+#### Running Workflows
+
+```bash
+# List available workflows and jobs
+act -l
+
+# Run the default push event (simulates push to branch)
+act push
+
+# Run a specific job
+act -j test
+
+# Dry-run mode (shows what would happen without executing)
+act -n push
+
+# Run with verbose output
+act -v push
+
+# Use a specific GitHub event (e.g., pull_request)
+act pull_request
+```
+
+#### Example Output
+
+```bash
+$ act push
+[Unit Tests/Run Unit Tests] 🚀  Start image=catthehacker/ubuntu:act-latest
+[Unit Tests/Run Unit Tests]   🐳  docker pull catthehacker/ubuntu:act-latest
+[Unit Tests/Run Unit Tests] ⭐  Run actions/checkout@v4
+[Unit Tests/Run Unit Tests]   ✅  Success - actions/checkout@v4
+[Unit Tests/Run Unit Tests] ⭐  Run Make scripts executable
+[Unit Tests/Run Unit Tests]   ✅  Success - Make scripts executable
+[Unit Tests/Run Unit Tests] ⭐  Run unit tests
+[Unit Tests/Run Unit Tests]   ✅  Success - Run unit tests
+[Unit Tests/Run Unit Tests] ⭐  Run coverage report
+[Unit Tests/Run Unit Tests]   ✅  Success - Run coverage report
+```
+
+#### Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Docker not running | Start Docker Desktop or run `sudo systemctl start docker` |
+| Permission denied | Run `sudo act push` or add your user to the docker group |
+| Slow first run | First run downloads Docker images (~1GB); subsequent runs are faster |
+| Missing secrets | Use `act -s SECRET_NAME=value` for workflows that need secrets |
+
+> **Tip**: Create an `.actrc` file in your project root to set default options:
+> ```
+> -P ubuntu-latest=catthehacker/ubuntu:act-latest
+> ```
+
 ## Project Structure
 
 ```bash
 firebase-cloud-message/
 ├── README.md
+├── .github/
+│   └── workflows/
+│       └── test.yml            # GitHub Actions workflow
 ├── scripts/
 │   ├── fcm.sh                  # Main CLI script
 │   └── tests/
+│       ├── test_lib.sh         # Test framework library
 │       └── test_fcm.sh         # Unit tests
 └── .gitignore
 ```

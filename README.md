@@ -298,6 +298,41 @@ For detailed testing documentation, including test breakdown, fixtures, and mock
 
 📄 **[tests/README.md](./tests/README.md)**
 
+## Code Linting
+
+This project uses [Pylint](https://pylint.readthedocs.io/) for static code analysis. The configuration is defined in `.pylintrc`.
+
+### Running Pylint
+
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Lint main script only
+pylint fcm_send.py
+
+# Lint main script and tests
+pylint fcm_send.py tests/
+
+# Lint tests only
+pylint tests/
+```
+
+### Configuration
+
+The `.pylintrc` file includes project-specific settings:
+
+- **Max line length:** 120 characters
+- **Extended test names:** Supports long descriptive test method names
+- **Disabled rules:** Common pytest patterns (unused fixtures, redefined outer names) and CLI patterns (broad exception catching)
+
+To check your current score:
+
+```bash
+# Output: Your code has been rated at X.XX/10
+pylint fcm_send.py tests/
+```
+
 ## References
 
 - [FCM: Retrieve the current registration token](https://firebase.google.com/docs/cloud-messaging/get-started?platform=android#retrieve-the-current-registration-token)

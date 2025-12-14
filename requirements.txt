@@ -16,3 +16,9 @@ firebase-admin>=6.0.0
 # Run with coverage: pytest --cov=. --cov-report=term-missing
 pytest>=7.0.0
 pytest-cov>=4.0.0
+
+# -----------------------------------------------------------------------------
+# Code Quality Dependencies
+# -----------------------------------------------------------------------------
+# Run linting with: pylint fcm_send.py tests/
+pylint>=3.0.0

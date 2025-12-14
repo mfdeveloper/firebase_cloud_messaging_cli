@@ -1,0 +1,194 @@
+# =============================================================================
+# Pylint Configuration - FCM Notification Sender
+# =============================================================================
+# Run with: pylint fcm_send.py tests/
+# =============================================================================
+
+[MAIN]
+# Analyse import fallback blocks
+analyse-fallback-blocks=yes
+
+# Files or directories to be skipped
+ignore=.git,__pycache__,venv,.venv,scripts
+
+# Use multiple processes to speed up Pylint
+jobs=0
+
+# Minimum Python version to use for version dependent checks
+py-version=3.9
+
+# =============================================================================
+# MESSAGES CONTROL
+# =============================================================================
+[MESSAGES CONTROL]
+# Disable specific warnings that are too noisy or not applicable
+disable=
+    # Allow catching broad exceptions in CLI applications
+    broad-exception-caught,
+    # Allow few public methods in data/config classes
+    too-few-public-methods,
+    # Import errors handled by the code itself
+    import-error,
+    # Allow dynamic imports from try/except blocks
+    import-outside-toplevel,
+    # Too many positional arguments (common in test fixtures)
+    too-many-positional-arguments,
+    # Protected access is sometimes needed (e.g., firebase_admin._apps)
+    protected-access,
+    # Pytest fixtures use outer scope names intentionally
+    redefined-outer-name,
+    # Pytest fixtures may appear as unused arguments but are needed for setup/teardown
+    unused-argument,
+
+# =============================================================================
+# FORMAT
+# =============================================================================
+[FORMAT]
+# Maximum number of characters on a single line
+max-line-length=120
+
+# Maximum number of lines in a module
+max-module-lines=1000
+
+# Expected format of line ending (empty for any)
+expected-line-ending-format=LF
+
+# =============================================================================
+# BASIC
+# =============================================================================
+[BASIC]
+# Good variable names which should always be accepted
+good-names=i,j,k,v,f,e,ex,_,id,ok
+
+# Regular expression for valid argument names
+argument-rgx=[a-z_][a-z0-9_]{1,30}$
+
+# Regular expression for valid variable names
+variable-rgx=[a-z_][a-z0-9_]{1,30}$
+
+# Regular expression for valid function names (extended for test names)
+function-rgx=([a-z_][a-z0-9_]{2,70}|test_[a-z0-9_]+)$
+
+# Regular expression for valid method names (extended for test names)
+method-rgx=([a-z_][a-z0-9_]{2,70}|test_[a-z0-9_]+)$
+
+# Regular expression for valid class names
+class-rgx=[A-Z_][a-zA-Z0-9]+$
+
+# Regular expression for valid module names
+module-rgx=[a-z_][a-z0-9_]*$
+
+# Naming style for arguments (pytest fixtures often have long names)
+argument-naming-style=snake_case
+
+# =============================================================================
+# DESIGN
+# =============================================================================
+[DESIGN]
+# Maximum number of arguments for function / method
+max-args=8
+
+# Maximum number of attributes for a class
+max-attributes=15
+
+# Maximum number of boolean expressions in an if statement
+max-bool-expr=5
+
+# Maximum number of branch for function / method body
+max-branches=15
+
+# Maximum number of locals for function / method body
+max-locals=20
+
+# Maximum number of public methods for a class
+max-public-methods=25
+
+# Maximum number of return / yield for function / method body
+max-returns=6
+
+# Maximum number of statements in function / method body
+max-statements=50
+
+# Minimum number of public methods for a class
+min-public-methods=1
+
+# =============================================================================
+# EXCEPTIONS
+# =============================================================================
+[EXCEPTIONS]
+# Exceptions that will emit a warning when caught
+overgeneral-exceptions=builtins.BaseException
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+[IMPORTS]
+# Allow wildcard imports from modules
+allow-wildcard-with-all=no
+
+# =============================================================================
+# LOGGING
+# =============================================================================
+[LOGGING]
+# The type of string formatting that logging methods do
+logging-format-style=new
+
+# =============================================================================
+# REFACTORING
+# =============================================================================
+[REFACTORING]
+# Maximum number of nested blocks for function / method body
+max-nested-blocks=5
+
+# =============================================================================
+# SIMILARITIES
+# =============================================================================
+[SIMILARITIES]
+# Ignore comments when computing similarities
+ignore-comments=yes
+
+# Ignore docstrings when computing similarities
+ignore-docstrings=yes
+
+# Ignore imports when computing similarities
+ignore-imports=yes
+
+# Minimum lines number of a similarity
+min-similarity-lines=6
+
+# =============================================================================
+# STRING
+# =============================================================================
+[STRING]
+# Check for implicit string concatenation
+check-str-concat-over-line-jumps=no
+
+# =============================================================================
+# TYPECHECK
+# =============================================================================
+[TYPECHECK]
+# List of members which are set dynamically
+generated-members=firebase_admin.*
+
+# Ignore mixin class names
+ignored-classes=SQLObject,optparse.Values,thread._local,_thread._local
+
+# =============================================================================
+# VARIABLES
+# =============================================================================
+[VARIABLES]
+# List of additional names to consider as defined
+additional-builtins=
+
+# Tells whether unused global variables should be treated as a violation
+allow-global-unused-variables=yes
+
+# List of names allowed to shadow builtins
+allowed-redefined-builtins=
+
+# List of strings which can identify a callback function by name
+callbacks=cb_,_cb
+
+# List of qualified module names which can have objects that shadow builtins
+redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
+

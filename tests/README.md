@@ -242,3 +242,97 @@ def test_send_notification_success(
 3. Use existing fixtures from `conftest.py` or create new ones as needed
 4. Mock external dependencies (Firebase Admin SDK) appropriately
 
+## GitHub Actions Workflow
+
+The project includes a GitHub Actions workflow (`.github/workflows/tests.yml`) that automatically runs tests on:
+
+- Push to `main` or `master` branches
+- Pull requests targeting `main` or `master`
+- Manual trigger via workflow dispatch
+
+### Workflow Jobs
+
+| Job | Description |
+|-----|-------------|
+| `test` | Runs pytest with coverage across Python 3.9-3.13 |
+| `lint` | Runs pylint with minimum score threshold of 8.0 |
+
+### Running the Workflow Locally
+
+You can run the GitHub Actions workflow locally using [act](https://github.com/nektos/act), a tool that runs your workflows in Docker containers.
+
+#### Prerequisites
+
+1. **Install Docker** - Required for running containers
+   - macOS: `brew install --cask docker`
+   - Linux: Follow [Docker installation guide](https://docs.docker.com/engine/install/)
+
+2. **Install act**
+   ```bash
+   # macOS
+   brew install act
+
+   # Linux (via curl)
+   curl -s https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+   ```
+
+#### Running Workflows Locally
+
+```bash
+# Navigate to project root
+cd /path/to/firebase-cloud-message
+
+# Run the entire workflow (all jobs)
+act
+
+# Run only the test job
+act -j test
+
+# Run only the lint job
+act -j lint
+
+# Run with a specific Python version (uses medium Ubuntu image)
+act -P ubuntu-latest=catthehacker/ubuntu:act-latest
+
+# Dry run (list actions without executing)
+act -n
+
+# Run workflow on push event (default)
+act push
+
+# Run workflow on pull_request event
+act pull_request
+
+# Run with verbose output for debugging
+act -v
+```
+
+#### First Run Notes
+
+On the first run, `act` will prompt you to select a Docker image size:
+
+- **Micro** (~200MB) - Minimal, may lack some tools
+- **Medium** (~500MB) - Recommended for most workflows
+- **Large** (~17GB) - Full GitHub Actions environment
+
+For this project, the **Medium** image is recommended.
+
+#### Troubleshooting act
+
+| Issue | Solution |
+|-------|----------|
+| Docker not running | Start Docker Desktop or the Docker daemon |
+| Permission denied | Run with `sudo` or add user to docker group |
+| Image pull fails | Check internet connection and Docker Hub access |
+| Python version not available | Use `-P ubuntu-latest=catthehacker/ubuntu:act-latest` |
+
+#### Example: Running Tests Locally
+
+```bash
+# Quick test run (single Python version)
+act -j test --matrix python-version:3.12
+
+# Full matrix test (all Python versions)
+act -j test
+```
+

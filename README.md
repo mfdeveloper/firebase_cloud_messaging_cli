@@ -1,8 +1,28 @@
-# FCM Notification Sender
+# Firebase Cloud Messaging (FCM) Notification Sender
 
 ![fcm-icon](./images/firebase-fcm-icon.png)
 
-A Python CLI tool for sending[Firebase Cloud Messaging (FCM)](https://firebase.google.com/docs/cloud-messaging/get-started?platform=android) notifications using the **[Firebase Admin SDK](https://firebase.google.com/docs/admin/setup#add-sdk).**
+A Python CLI tool for sending [Firebase Cloud Messaging (FCM)](https://firebase.google.com/docs/cloud-messaging/get-started?platform=android) notifications using the **[Firebase Admin SDK](https://firebase.google.com/docs/admin/setup#add-sdk).**
+
+[![PyPI version](https://badge.fury.io/py/fcm-send.svg)](https://badge.fury.io/py/fcm-send)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Installation
+
+### From PyPI (Recommended)
+
+```bash
+pip install fcm-send
+```
+
+### From Source
+
+```bash
+git clone https://github.com/mfdeveloper/firebase_cloud_messaging_cli.git
+cd fcm-send
+pip install -e .
+```
 
 ## Features
 
@@ -18,7 +38,7 @@ A Python CLI tool for sending[Firebase Cloud Messaging (FCM)](https://firebase.g
 
 ```bash
 # Navigate to the firebase-notifications directory
-cd scripts/firebase-notifications
+cd <project-root>
 
 # Create virtual environment
 python3 -m venv venv
@@ -28,6 +48,8 @@ source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
+# or
+pip install -e ".[dev]"
 ```
 
 > **Note:** Always activate the virtual environment before running the script.
@@ -47,7 +69,7 @@ To authenticate a service account and authorize it to access Firebase services, 
 
 > For more details, see the Firebase documentation page: [Initialize the SDK in non-Google environments](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments)
 
-### 3. Environment Setup
+### Environment Setup
 
 Set the credentials environment variable pointing to your service account JSON file:
 
@@ -74,7 +96,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your-service-account.json
 Before running any commands, activate the virtual environment:
 
 ```bash
-cd scripts/firebase-notifications
+cd <project-root>
 source venv/bin/activate
 ```
 
@@ -82,12 +104,6 @@ To deactivate when done:
 
 ```bash
 deactivate
-```
-
-**Alternative:** Run directly without activating:
-
-```bash
-scripts/firebase-notifications/venv/bin/python scripts/firebase-notifications/fcm_send.py.py --info
 ```
 
 > **Note:** Using a code editor (such as [VSCode](https://code.visualstudio.com) or [Cursor](https://cursor.com)) a Python Virtual Environment can be loaded automatically using [.vscode/settings.json](./.vscode/settings.json) configurations.
@@ -98,14 +114,14 @@ scripts/firebase-notifications/venv/bin/python scripts/firebase-notifications/fc
 
 ```bash
 # Using CLI argument (takes precedence)
-./fcm_send.py --credentials-key-file ~/my-service-account.json --info
+fcm-send --credentials-key-file ~/my-service-account.json --info
 
 # Using environment variable
 export GOOGLE_APPLICATION_CREDENTIALS=~/my-service-account.json
-./fcm_send.py --info
+fcm-send --info
 
 # Combining with other commands
-./fcm_send.py --credentials-key-file ~/sa.json --token FCM_TOKEN --title "Hi" --body "Test"
+fcm-send --credentials-key-file ~/sa.json --token FCM_TOKEN --title "Hi" --body "Test"
 ```
 
 ### Show Service Account Info & Access Token
@@ -113,9 +129,9 @@ export GOOGLE_APPLICATION_CREDENTIALS=~/my-service-account.json
 Display project details and retrieve the current **Firebase Admin SDK** access token:
 
 ```bash
-./fcm_send.py --info
+fcm-send --info
 # Or use --access-token alias
-./fcm_send.py --access-token
+fcm-send --access-token
 ```
 
 **Output:**
@@ -138,21 +154,21 @@ Firebase Service Account Information
 Alternatively, display project details with current **Google OAuth2 access token for using with FCM HTTP API** access token. You can use it to perform a `curl` or any other way for HTTP requests on FCM API:
 
 ```bash
-./fcm_send.py --info-http
+fcm-send --info-http
 # Or use --access-token-http alias
-./fcm_send.py --access-token-http
+fcm-send --access-token-http
 ```
 
 ### Send a Simple Notification
 
 ```bash
-./fcm_send.py --token YOUR_FCM_TOKEN --title "Hello" --body "World"
+fcm-send --token YOUR_FCM_TOKEN --title "Hello" --body "World"
 ```
 
 ### Send Notification with Custom Data Payload
 
 ```bash
-./fcm_send.py --token YOUR_FCM_TOKEN \
+fcm-send --token YOUR_FCM_TOKEN \
   --title "Order Update" \
   --body "Your order has been shipped!" \
   --data '{"order_id": "12345", "action": "open_order"}'
@@ -161,7 +177,7 @@ Alternatively, display project details with current **Google OAuth2 access token
 ### Send Notification with Image
 
 ```bash
-./fcm_send.py --token YOUR_FCM_TOKEN \
+fcm-send --token YOUR_FCM_TOKEN \
   --title "Check this out" \
   --body "New feature available!" \
   --image "https://example.com/image.png"
@@ -172,7 +188,7 @@ Alternatively, display project details with current **Google OAuth2 access token
 Data-only messages don't show a visible notification but are delivered to your app for background processing:
 
 ```bash
-./fcm_send.py --token YOUR_FCM_TOKEN \
+fcm-send --token YOUR_FCM_TOKEN \
   --data-only '{"action": "sync", "resource_id": "123"}'
 ```
 
@@ -181,10 +197,36 @@ Data-only messages don't show a visible notification but are delivered to your a
 Test your message configuration without actually sending it:
 
 ```bash
-./fcm_send.py --token YOUR_FCM_TOKEN \
+fcm-send --token YOUR_FCM_TOKEN \
   --title "Test" \
   --body "This is a test" \
   --dry-run
+```
+
+### Using as a Python Library
+
+You can also use `fcm-send` as a library in your **Python** code:
+
+```python
+from fcm_send import FCMClient
+
+# Initialize client with credentials file
+client = FCMClient("/path/to/service-account.json")
+
+# Send a notification
+response = client.send_notification(
+    fcm_token="device_fcm_token",
+    title="Hello",
+    body="World",
+    data={"key": "value"}  # optional
+)
+print(f"Message ID: {response}")
+
+# Send a data-only message
+response = client.send_data_message(
+    fcm_token="device_fcm_token",
+    data={"action": "sync", "id": "123"}
+)
 ```
 
 ## CLI Options Reference
@@ -274,24 +316,52 @@ Handles command-line interface:
 - `handle_notification()` - Process notification command
 - `run()` - Main CLI execution logic
 
-## Unit testing
+## Development
 
-The project includes a comprehensive test suite with **58 unit tests** achieving **97% code coverage** on the main script.
+### Package Structure
 
-### Quick Start
+```
+firebase-cloud-messaging/
+├── src/
+│   └── fcm_send/
+│       ├── __init__.py      # Package exports (FCMClient, main, etc.)
+│       ├── __main__.py      # Enables `python -m fcm_send`
+│       ├── __version__.py   # Version from pyproject.toml ✨
+│       ├── client.py        # FCMClient class
+│       ├── cli.py           # CLIHandler and main() entry point
+│       └── py.typed         # PEP 561 marker for type checking
+├── tests/                   # Test suite (58 tests)
+├── pyproject.toml           # Package configuration (uses hatchling)
+├── LICENSE                  # MIT License
+├── README.md                # This file
+└── requirements.txt         # Legacy dependencies file
+```
+
+### Installation for Development
 
 ```bash
+git clone https://github.com/mfdeveloper/firebase_cloud_messaging_cli.git
+cd <project-root>
+
 # Activate virtual environment
 source venv/bin/activate
+# Install dependencies
+pip install -e ".[dev]"
+```
 
+### Unit Testing
+
+The project includes a comprehensive test suite with **58 unit tests** achieving **97% code coverage**.
+
+```bash
 # Run all tests
 pytest
 
 # Run with coverage terminal report
-pytest --cov=. --cov-report=term-missing
+pytest --cov=src/fcm_send --cov-report=term-missing
 
-# Alternatively, run tests with coverage (HTML report)
-pytest --cov=. --cov-report=html
+# Run tests with coverage (HTML report)
+pytest --cov=src/fcm_send --cov-report=html
 ```
 
 For detailed testing documentation, including test breakdown, fixtures, and mocking strategy, see:
@@ -308,11 +378,11 @@ This project uses [Pylint](https://pylint.readthedocs.io/) for static code analy
 # Activate virtual environment
 source venv/bin/activate
 
-# Lint main script only
-pylint fcm_send.py
+# Lint source package only
+pylint src/fcm_send/
 
-# Lint main script and tests
-pylint fcm_send.py tests/
+# Lint source package and tests
+pylint src/fcm_send/ tests/
 
 # Lint tests only
 pylint tests/
@@ -330,8 +400,94 @@ To check your current score:
 
 ```bash
 # Output: Your code has been rated at X.XX/10
-pylint fcm_send.py tests/
+pylint src/fcm_send/ tests/
 ```
+
+## Publishing to PyPI
+
+### 1. Update Package Metadata
+
+Before publishing, edit `pyproject.toml` to set your author information and repository URLs:
+
+```toml
+authors = [
+    { name = "Your Name", email = "your.email@example.com" }
+]
+
+[project.urls]
+Homepage = "https://github.com/mfdeveloper/firebase_cloud_messaging_cli"
+Repository = "https://github.com/mfdeveloper/firebase_cloud_messaging_cli"
+```
+
+### 2. Build the Package
+
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Build both sdist and wheel
+python -m build
+```
+
+This creates distribution files in the `dist/` directory:
+- `dist/fcm_send-0.1.0.tar.gz` (source distribution)
+- `dist/fcm_send-0.1.0-py3-none-any.whl` (wheel)
+
+### 3. Upload to Test PyPI (Recommended First)
+
+Test your package on [Test PyPI](https://test.pypi.org) before publishing to the real PyPI.
+
+#### Option A: Using GitHub Actions (Recommended)
+
+This project includes a GitHub Actions workflow for automated publishing to TestPyPI.
+
+**Triggers:**
+- **Manual**: Go to Actions → **"Publish to TestPyPI"** → **"Run workflow"**
+- **Automatic**: Push a version tag (e.g., `git tag v0.1.0 && git push --tags`)
+
+**One-time Setup:**
+1. Create a [TestPyPI account](https://test.pypi.org/account/register/)
+2. Configure [Trusted Publishing](https://test.pypi.org/manage/account/publishing/):
+   - Click "Add a new pending publisher"
+   - **PyPI Project Name**: `fcm-send`
+   - **Owner**: Your GitHub username
+   - **Repository**: `firebase_cloud_messaging_cli`
+   - **Workflow name**: `publish-testpypi.yml`
+   - **Environment**: `testpypi`
+
+#### Option B: Manual Upload
+
+```bash
+# Upload to Test PyPI
+twine upload --repository testpypi dist/*
+
+# Test installation from Test PyPI
+pip install --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple/ \
+  fcm-send
+```
+
+> **Note**: The `--extra-index-url` is needed because TestPyPI doesn't have all dependencies (like [`firebase-admin`](https://firebase.google.com/docs/admin/setup#add-sdk)), so it falls back to the real PyPI for those.
+
+### 4. Upload to PyPI
+
+Once verified, upload to the official PyPI:
+
+```bash
+twine upload dist/*
+```
+
+> **Note:** You'll need to create an account at [pypi.org](https://pypi.org) and generate an API token.
+> Store your token in `~/.pypirc` or use `twine upload --username __token__ --password <your-token> dist/*`
+
+### 5. After Publishing
+
+Users can install your package with:
+
+```bash
+pip install fcm-send
+```
+
 
 ## References
 

@@ -4,14 +4,10 @@ Pytest configuration and shared fixtures for FCM tests.
 
 import json
 import os
-import sys
 import tempfile
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-# Add parent directory to path for fcm_send module import
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 @pytest.fixture
@@ -48,7 +44,7 @@ def temp_credentials_file(mock_service_account_data):
 @pytest.fixture
 def mock_firebase_admin():
     """Mock the firebase_admin module."""
-    with patch('fcm_send.firebase_admin') as mock_admin:
+    with patch('fcm_send.client.firebase_admin') as mock_admin:
         # Mock _apps to simulate uninitialized state
         mock_admin._apps = {}
         
@@ -70,7 +66,7 @@ def mock_firebase_admin():
 @pytest.fixture
 def mock_messaging():
     """Mock the firebase_admin.messaging module."""
-    with patch('fcm_send.messaging') as mock_msg:
+    with patch('fcm_send.client.messaging') as mock_msg:
         # Mock send to return a message ID
         mock_msg.send.return_value = "projects/test-project/messages/mock_message_id_123"
         
@@ -88,7 +84,7 @@ def mock_messaging():
 @pytest.fixture
 def mock_credentials():
     """Mock the firebase_admin.credentials module."""
-    with patch('fcm_send.credentials') as mock_creds:
+    with patch('fcm_send.client.credentials') as mock_creds:
         mock_certificate = MagicMock()
         mock_access_token = MagicMock()
         mock_access_token.access_token = "mock_http_access_token_67890"
@@ -96,6 +92,24 @@ def mock_credentials():
         mock_creds.Certificate.return_value = mock_certificate
         
         yield mock_creds
+
+
+@pytest.fixture
+def mock_cli_messaging():
+    """Mock the firebase_admin.messaging module for CLI tests."""
+    with patch('fcm_send.cli.messaging') as mock_msg:
+        # Mock send to return a message ID
+        mock_msg.send.return_value = "projects/test-project/messages/mock_message_id_123"
+        
+        # Mock Notification and Message classes
+        mock_msg.Notification = MagicMock()
+        mock_msg.Message = MagicMock()
+        
+        # Mock error classes
+        mock_msg.UnregisteredError = type('UnregisteredError', (Exception,), {})
+        mock_msg.SenderIdMismatchError = type('SenderIdMismatchError', (Exception,), {})
+        
+        yield mock_msg
 
 
 @pytest.fixture
@@ -115,4 +129,3 @@ def clean_environment():
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = original_env
     elif "GOOGLE_APPLICATION_CREDENTIALS" in os.environ:
         del os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
-

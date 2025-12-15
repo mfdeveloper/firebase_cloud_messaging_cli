@@ -25,7 +25,7 @@ tests/
 
 | Module | Coverage |
 |--------|----------|
-| `fcm_send.py` | 97% |
+| `src/fcm_send/` | 97% |
 | `test_fcm_client.py` | 100% |
 | `test_cli_handler.py` | 100% |
 

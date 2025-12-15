@@ -2,12 +2,10 @@
 Unit tests for CLIHandler class.
 """
 
-import os
 import sys
 import pytest
 from unittest.mock import MagicMock, patch
 
-# fcm_send module is loaded by conftest.py
 from fcm_send import CLIHandler, FCMClient, AccessTokenType
 
 
@@ -120,8 +118,8 @@ class TestCLIHandlerRun:
             '--title', 'Test',
             '--body', 'Body'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     handler = CLIHandler()
                     handler.handle_notification = MagicMock()
                     
@@ -139,8 +137,8 @@ class TestCLIHandlerRun:
             '--token', 'test_token',
             '--data-only', '{"action": "sync"}'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     handler = CLIHandler()
                     handler.handle_data_only = MagicMock()
                     
@@ -157,8 +155,8 @@ class TestCLIHandlerHandleInfo:
     ):
         """Test that handle_info calls client.show_info."""
         with patch.object(sys, 'argv', ['fcm_send', '--credentials-key-file', temp_credentials_file]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.credentials', mock_credentials):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.credentials', mock_credentials):
                     handler = CLIHandler()
                     handler.client.show_info = MagicMock()
                     
@@ -171,8 +169,8 @@ class TestCLIHandlerHandleInfo:
     ):
         """Test that handle_info passes correct token type."""
         with patch.object(sys, 'argv', ['fcm_send', '--credentials-key-file', temp_credentials_file]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.credentials', mock_credentials):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.credentials', mock_credentials):
                     handler = CLIHandler()
                     handler.client.show_info = MagicMock()
                     
@@ -206,8 +204,8 @@ class TestCLIHandlerHandleNotification:
             '--title', 'Test',
             '--body', 'Body'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     handler = CLIHandler()
                     handler.handle_notification(handler.args)
                     
@@ -227,8 +225,8 @@ class TestCLIHandlerHandleNotification:
             '--body', 'Body',
             '--data', '{"key": "value"}'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     handler = CLIHandler()
                     handler.client.send_notification = MagicMock(return_value="msg_id")
                     
@@ -249,8 +247,8 @@ class TestCLIHandlerHandleNotification:
             '--body', 'Body',
             '--data', 'invalid json'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     handler = CLIHandler()
                     
                     with pytest.raises(SystemExit) as exc_info:
@@ -270,8 +268,8 @@ class TestCLIHandlerHandleNotification:
             '--body', 'Body',
             '--dry-run'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     handler = CLIHandler()
                     handler.handle_notification(handler.args)
                     
@@ -292,8 +290,8 @@ class TestCLIHandlerHandleDataOnly:
             '--token', 'test_token',
             '--data-only', '{"action": "sync"}'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     handler = CLIHandler()
                     handler.handle_data_only(handler.args)
                     
@@ -311,8 +309,8 @@ class TestCLIHandlerHandleDataOnly:
             '--token', 'test_token',
             '--data-only', 'not valid json'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     handler = CLIHandler()
                     
                     with pytest.raises(SystemExit) as exc_info:
@@ -331,8 +329,8 @@ class TestCLIHandlerHandleDataOnly:
             '--data-only', '{"action": "sync"}',
             '--dry-run'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     handler = CLIHandler()
                     handler.handle_data_only(handler.args)
                     
@@ -349,8 +347,8 @@ class TestCLIHandlerHandleDataOnly:
             '--token', 'test_token',
             '--data-only', '{"action": "sync"}'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     # Make send_data_message raise an exception
                     mock_messaging.send.side_effect = Exception("Network error")
                     
@@ -366,7 +364,7 @@ class TestCLIHandlerNotificationErrors:
     """Tests for CLIHandler notification error handling."""
 
     def test_handle_notification_unregistered_error(
-        self, temp_credentials_file, mock_firebase_admin, mock_messaging, capsys, clean_environment
+        self, temp_credentials_file, mock_firebase_admin, mock_messaging, mock_cli_messaging, capsys, clean_environment
     ):
         """Test handling of UnregisteredError."""
         with patch.object(sys, 'argv', [
@@ -376,22 +374,23 @@ class TestCLIHandlerNotificationErrors:
             '--title', 'Test',
             '--body', 'Body'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
-                    # Make send raise UnregisteredError
-                    mock_messaging.send.side_effect = mock_messaging.UnregisteredError("Token not registered")
-                    
-                    handler = CLIHandler()
-                    
-                    with pytest.raises(SystemExit) as exc_info:
-                        handler.handle_notification(handler.args)
-                    
-                    assert exc_info.value.code == 1
-                    captured = capsys.readouterr()
-                    assert "not registered" in captured.out.lower()
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
+                    with patch('fcm_send.cli.messaging', mock_cli_messaging):
+                        # Make send raise UnregisteredError
+                        mock_messaging.send.side_effect = mock_cli_messaging.UnregisteredError("Token not registered")
+                        
+                        handler = CLIHandler()
+                        
+                        with pytest.raises(SystemExit) as exc_info:
+                            handler.handle_notification(handler.args)
+                        
+                        assert exc_info.value.code == 1
+                        captured = capsys.readouterr()
+                        assert "not registered" in captured.out.lower()
 
     def test_handle_notification_sender_id_mismatch_error(
-        self, temp_credentials_file, mock_firebase_admin, mock_messaging, capsys, clean_environment
+        self, temp_credentials_file, mock_firebase_admin, mock_messaging, mock_cli_messaging, capsys, clean_environment
     ):
         """Test handling of SenderIdMismatchError."""
         with patch.object(sys, 'argv', [
@@ -401,19 +400,20 @@ class TestCLIHandlerNotificationErrors:
             '--title', 'Test',
             '--body', 'Body'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
-                    # Make send raise SenderIdMismatchError
-                    mock_messaging.send.side_effect = mock_messaging.SenderIdMismatchError("Sender ID mismatch")
-                    
-                    handler = CLIHandler()
-                    
-                    with pytest.raises(SystemExit) as exc_info:
-                        handler.handle_notification(handler.args)
-                    
-                    assert exc_info.value.code == 1
-                    captured = capsys.readouterr()
-                    assert "sender ID" in captured.out.lower() or "wrong project" in captured.out.lower()
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
+                    with patch('fcm_send.cli.messaging', mock_cli_messaging):
+                        # Make send raise SenderIdMismatchError
+                        mock_messaging.send.side_effect = mock_cli_messaging.SenderIdMismatchError("Sender ID mismatch")
+                        
+                        handler = CLIHandler()
+                        
+                        with pytest.raises(SystemExit) as exc_info:
+                            handler.handle_notification(handler.args)
+                        
+                        assert exc_info.value.code == 1
+                        captured = capsys.readouterr()
+                        assert "sender ID" in captured.out.lower() or "wrong project" in captured.out.lower()
 
     def test_handle_notification_generic_error(
         self, temp_credentials_file, mock_firebase_admin, mock_messaging, capsys, clean_environment
@@ -426,8 +426,8 @@ class TestCLIHandlerNotificationErrors:
             '--title', 'Test',
             '--body', 'Body'
         ]):
-            with patch('fcm_send.firebase_admin', mock_firebase_admin):
-                with patch('fcm_send.messaging', mock_messaging):
+            with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+                with patch('fcm_send.client.messaging', mock_messaging):
                     # Make send raise a generic exception
                     mock_messaging.send.side_effect = Exception("Network timeout")
                     
@@ -490,4 +490,3 @@ class TestMainFunction:
             captured = capsys.readouterr()
             # Should print help when no args
             assert 'usage:' in captured.out.lower() or 'Firebase Cloud Messaging' in captured.out
-

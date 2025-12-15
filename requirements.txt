@@ -1,24 +1,11 @@
 # =============================================================================
 # FCM Notification Sender - Dependencies
 # =============================================================================
+# This file references pyproject.toml as the single source of truth.
+#
 # Install with: pip install -r requirements.txt
+# Or directly:  pip install -e ".[dev]"
 # =============================================================================
 
-# -----------------------------------------------------------------------------
-# Core Dependencies
-# -----------------------------------------------------------------------------
-firebase-admin>=6.0.0
-
-# -----------------------------------------------------------------------------
-# Testing Dependencies
-# -----------------------------------------------------------------------------
-# Run tests with: pytest
-# Run with coverage: pytest --cov=. --cov-report=term-missing
-pytest>=7.0.0
-pytest-cov>=4.0.0
-
-# -----------------------------------------------------------------------------
-# Code Quality Dependencies
-# -----------------------------------------------------------------------------
-# Run linting with: pylint fcm_send.py tests/
-pylint>=3.0.0
+# Install the package in editable mode with all dev dependencies
+-e ".[dev]"

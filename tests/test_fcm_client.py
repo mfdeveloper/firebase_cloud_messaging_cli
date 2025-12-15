@@ -3,11 +3,9 @@ Unit tests for FCMClient class.
 """
 
 import os
-import sys
 import pytest
 from unittest.mock import patch
 
-# fcm_send module is loaded by conftest.py
 from fcm_send import FCMClient, AccessTokenType
 
 
@@ -105,7 +103,7 @@ class TestFCMClientInitialize:
         self, temp_credentials_file, mock_firebase_admin, clean_environment
     ):
         """Test that initialize sets environment variable when CLI arg is provided."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
             client = FCMClient(credentials_key_file=temp_credentials_file)
             client.initialize()
             
@@ -114,7 +112,7 @@ class TestFCMClientInitialize:
 
     def test_initialize_only_once(self, temp_credentials_file, mock_firebase_admin, clean_environment):
         """Test that initialize is only called once."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
             client = FCMClient(credentials_key_file=temp_credentials_file)
             
             client.initialize()
@@ -130,7 +128,7 @@ class TestFCMClientAccessToken:
 
     def test_get_access_token(self, temp_credentials_file, mock_firebase_admin, clean_environment):
         """Test getting access token from Firebase Admin SDK."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
             client = FCMClient(credentials_key_file=temp_credentials_file)
             token = client.get_access_token()
             
@@ -141,8 +139,8 @@ class TestFCMClientAccessToken:
         self, temp_credentials_file, mock_firebase_admin, mock_credentials, clean_environment
     ):
         """Test getting OAuth2 access token for HTTP API."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
-            with patch('fcm_send.credentials', mock_credentials):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+            with patch('fcm_send.client.credentials', mock_credentials):
                 client = FCMClient(credentials_key_file=temp_credentials_file)
                 token = client.get_access_token_http_api()
                 
@@ -157,8 +155,8 @@ class TestFCMClientSendNotification:
         self, temp_credentials_file, mock_firebase_admin, mock_messaging, clean_environment
     ):
         """Test sending a notification successfully."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
-            with patch('fcm_send.messaging', mock_messaging):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+            with patch('fcm_send.client.messaging', mock_messaging):
                 client = FCMClient(credentials_key_file=temp_credentials_file)
                 
                 response = client.send_notification(
@@ -174,8 +172,8 @@ class TestFCMClientSendNotification:
         self, temp_credentials_file, mock_firebase_admin, mock_messaging, clean_environment
     ):
         """Test sending a notification with custom data."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
-            with patch('fcm_send.messaging', mock_messaging):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+            with patch('fcm_send.client.messaging', mock_messaging):
                 client = FCMClient(credentials_key_file=temp_credentials_file)
                 
                 response = client.send_notification(
@@ -192,8 +190,8 @@ class TestFCMClientSendNotification:
         self, temp_credentials_file, mock_firebase_admin, mock_messaging, clean_environment
     ):
         """Test sending a notification with image."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
-            with patch('fcm_send.messaging', mock_messaging):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+            with patch('fcm_send.client.messaging', mock_messaging):
                 client = FCMClient(credentials_key_file=temp_credentials_file)
                 
                 response = client.send_notification(
@@ -210,8 +208,8 @@ class TestFCMClientSendNotification:
         self, temp_credentials_file, mock_firebase_admin, mock_messaging, clean_environment
     ):
         """Test sending a notification with dry_run=True."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
-            with patch('fcm_send.messaging', mock_messaging):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+            with patch('fcm_send.client.messaging', mock_messaging):
                 client = FCMClient(credentials_key_file=temp_credentials_file)
                 
                 client.send_notification(
@@ -233,8 +231,8 @@ class TestFCMClientSendDataMessage:
         self, temp_credentials_file, mock_firebase_admin, mock_messaging, clean_environment
     ):
         """Test sending a data-only message successfully."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
-            with patch('fcm_send.messaging', mock_messaging):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+            with patch('fcm_send.client.messaging', mock_messaging):
                 client = FCMClient(credentials_key_file=temp_credentials_file)
                 
                 response = client.send_data_message(
@@ -248,8 +246,8 @@ class TestFCMClientSendDataMessage:
         self, temp_credentials_file, mock_firebase_admin, mock_messaging, clean_environment
     ):
         """Test that data values are converted to strings."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
-            with patch('fcm_send.messaging', mock_messaging):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+            with patch('fcm_send.client.messaging', mock_messaging):
                 client = FCMClient(credentials_key_file=temp_credentials_file)
                 
                 # Pass mixed types
@@ -266,8 +264,8 @@ class TestFCMClientSendDataMessage:
         self, temp_credentials_file, mock_firebase_admin, mock_messaging, clean_environment
     ):
         """Test sending a data message with dry_run=True."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
-            with patch('fcm_send.messaging', mock_messaging):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+            with patch('fcm_send.client.messaging', mock_messaging):
                 client = FCMClient(credentials_key_file=temp_credentials_file)
                 
                 client.send_data_message(
@@ -287,7 +285,7 @@ class TestFCMClientShowInfo:
         self, temp_credentials_file, mock_firebase_admin, capsys, clean_environment
     ):
         """Test show_info displays Firebase Admin SDK access token."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
             client = FCMClient(credentials_key_file=temp_credentials_file)
             client.show_info(AccessTokenType.FIREBASE_ADMIN)
             
@@ -302,8 +300,8 @@ class TestFCMClientShowInfo:
         self, temp_credentials_file, mock_firebase_admin, mock_credentials, capsys, clean_environment
     ):
         """Test show_info displays HTTP API OAuth2 access token."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
-            with patch('fcm_send.credentials', mock_credentials):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
+            with patch('fcm_send.client.credentials', mock_credentials):
                 client = FCMClient(credentials_key_file=temp_credentials_file)
                 client.show_info(AccessTokenType.FCM_OAUTH_HTTP_API)
                 
@@ -316,7 +314,7 @@ class TestFCMClientShowInfo:
         self, temp_credentials_file, mock_firebase_admin, capsys, clean_environment
     ):
         """Test show_info handles errors when retrieving access token."""
-        with patch('fcm_send.firebase_admin', mock_firebase_admin):
+        with patch('fcm_send.client.firebase_admin', mock_firebase_admin):
             # Make get_access_token raise an exception
             mock_firebase_admin.get_app.return_value.credential.get_access_token.side_effect = Exception("Token error")
             
@@ -338,4 +336,3 @@ class TestAccessTokenType:
     def test_fcm_http_api_type(self):
         """Test FCM_OAUTH_HTTP_API enum value."""
         assert AccessTokenType.FCM_OAUTH_HTTP_API.value == "fcm_http_api"
-

@@ -1,0 +1,83 @@
+# =============================================================================
+# Publish to PyPI - GitHub Actions Workflow
+# =============================================================================
+# This workflow builds and publishes the package to the official PyPI.
+#
+# Triggers:
+#   - Push tag matching 'pypi-*' (e.g., pypi-0.1.0, pypi-1.0.0)
+#
+# Setup Required:
+#   1. Go to https://pypi.org/manage/account/publishing/
+#   2. Add a new "pending publisher" with:
+#      - PyPI Project Name: fcm-send
+#      - Owner: <your-github-username>
+#      - Repository: firebase_cloud_messaging_cli
+#      - Workflow name: publish-pypi.yml
+#      - Environment: pypi (recommended)
+#
+# Usage:
+#   git tag pypi-0.1.0
+#   git push origin pypi-0.1.0
+# =============================================================================
+
+name: Python Package > Publish to PyPI
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+
+  # Trigger on pypi-* tags
+  push:
+    tags:
+      - 'pypi-*'
+
+jobs:
+  # Reuse the build workflow
+  build:
+    name: Build Package
+    uses: ./.github/workflows/build.yml
+
+  publish-pypi:
+    name: Publish to PyPI 🚀
+    needs: build
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: pypi
+      url: https://pypi.org/p/fcm-send
+
+    permissions:
+      id-token: write  # Required for trusted publishing
+
+    steps:
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  test-install:
+    name: Test installation ✅
+    needs: publish-pypi
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Wait for package to be available
+        run: sleep 60
+
+      - name: Install from PyPI
+        run: pip install fcm-send
+
+      - name: Verify installation
+        run: |
+          fcm-send --version
+          python -c "from fcm_send import FCMClient, __version__; print(f'✅ Published successfully: v{__version__}')"
+

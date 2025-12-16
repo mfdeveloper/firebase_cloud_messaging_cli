@@ -480,7 +480,7 @@ This project includes a GitHub Actions workflow for automated publishing to PyPI
 **Trigger:**
 - Push a `pypi-*` tag:
   ```bash
-  git tag pypi-0.1.0
+  git tag -a pypi-0.1.0 -m "My PyPI package version"
   git push origin pypi-0.1.0
   ```
 

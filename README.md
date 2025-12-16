@@ -471,7 +471,30 @@ pip install --index-url https://test.pypi.org/simple/ \
 
 ### 4. Upload to PyPI
 
-Once verified, upload to the official PyPI:
+Once verified on TestPyPI, publish to the official PyPI.
+
+#### Option A: Using GitHub Actions (Recommended)
+
+This project includes a GitHub Actions workflow for automated publishing to PyPI.
+
+**Trigger:**
+- Push a `pypi-*` tag:
+  ```bash
+  git tag pypi-0.1.0
+  git push origin pypi-0.1.0
+  ```
+
+**One-time Setup:**
+1. Create a [PyPI account](https://pypi.org/account/register/)
+2. Configure [Trusted Publishing](https://pypi.org/manage/account/publishing/):
+   - Click "Add a new pending publisher"
+   - **PyPI Project Name**: `fcm-send`
+   - **Owner**: Your GitHub username
+   - **Repository**: `firebase_cloud_messaging_cli`
+   - **Workflow name**: `publish-pypi.yml`
+   - **Environment**: `pypi`
+
+#### Option B: Manual Upload
 
 ```bash
 twine upload dist/*

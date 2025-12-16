@@ -1,0 +1,84 @@
+# =============================================================================
+# Publish to TestPyPI - GitHub Actions Workflow
+# =============================================================================
+# This workflow builds and publishes the package to TestPyPI for testing.
+#
+# Triggers:
+#   - Manual dispatch (workflow_dispatch)
+#   - Push to main/master with version tag (v*)
+#
+# Setup Required:
+#   1. Go to https://test.pypi.org/manage/account/publishing/
+#   2. Add a new "pending publisher" with:
+#      - PyPI Project Name: fcm-send
+#      - Owner: <your-github-username>
+#      - Repository: firebase_cloud_messaging_cli
+#      - Workflow name: publish-testpypi.yml
+#      - Environment: testpypi (optional but recommended)
+# =============================================================================
+
+name: Python Package > Publish to TestPyPI
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+  
+  # Trigger on version tags
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  # Reuse the build workflow
+  build:
+    name: Build Package
+    uses: ./.github/workflows/build.yml
+
+  publish-testpypi:
+    name: Publish to TestPyPI 🧪
+    needs: build
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/fcm-send
+
+    permissions:
+      id-token: write  # Required for trusted publishing
+
+    steps:
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  test-install:
+    name: Test installation 🧪
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Wait for package to be available
+        run: sleep 30
+
+      - name: Install from TestPyPI
+        run: |
+          pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            fcm-send
+
+      - name: Verify installation
+        run: |
+          fcm-send --version
+          python -c "from fcm_send import FCMClient, __version__; print(f'Imported successfully: v{__version__}')"

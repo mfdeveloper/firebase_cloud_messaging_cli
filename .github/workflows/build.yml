@@ -1,0 +1,66 @@
+# =============================================================================
+# Build Package - GitHub Actions Workflow
+# =============================================================================
+# Builds the Python package distribution (sdist and wheel).
+#
+# This workflow can be:
+#   - Run manually via workflow_dispatch
+#   - Called by other workflows via workflow_call
+#
+# Usage in another workflow:
+#   jobs:
+#     build:
+#       uses: ./.github/workflows/build.yml
+# =============================================================================
+
+name: Python Package > Build
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+
+  # Allow other workflows to call this one
+  workflow_call:
+    outputs:
+      artifact-name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact-name }}
+
+jobs:
+  build:
+    name: Build distribution 📦
+    runs-on: ubuntu-latest
+
+    outputs:
+      artifact-name: ${{ steps.set-artifact-name.outputs.name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build package
+        run: python -m build
+
+      - name: Set artifact name
+        id: set-artifact-name
+        run: echo "name=python-package-distributions" >> $GITHUB_OUTPUT
+
+      - name: Upload distribution artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.set-artifact-name.outputs.name }}
+          path: dist/
+
+      - name: List built packages
+        run: ls -la dist/
+

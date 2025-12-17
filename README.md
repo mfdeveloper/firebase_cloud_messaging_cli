@@ -10,18 +10,54 @@ A Python CLI tool for sending [Firebase Cloud Messaging (FCM)](https://firebase.
 
 ## Installation
 
-### From PyPI (Recommended)
+### Using Poetry (Recommended)
+
+This project uses [Poetry](https://python-poetry.org/) for dependency management and packaging.
+
+**Add to your project:**
+
+```bash
+poetry add fcm-send
+```
+
+**Install globally:**
+
+```bash
+pipx install fcm-send
+```
+
+### Using pip
 
 ```bash
 pip install fcm-send
 ```
 
-### From Source
+### Using pipx (Isolated CLI)
+
+[pipx](https://pipx.pypa.io/) installs the CLI in an isolated environment, avoiding dependency conflicts:
+
+```bash
+# Install pipx if you don't have it
+pip install pipx
+# macOS: Using brew
+brew install pipx
+pipx ensurepath
+
+# Install fcm-send
+pipx install fcm-send
+```
+
+### From Source (Development)
 
 ```bash
 git clone https://github.com/mfdeveloper/firebase_cloud_messaging_cli.git
-cd fcm-send
-pip install -e .
+cd firebase_cloud_messaging_cli
+
+# Install with Poetry (recommended)
+poetry install
+
+# Run the CLI
+poetry run fcm-send --version
 ```
 
 ## Features
@@ -34,27 +70,39 @@ pip install -e .
 
 ## Prerequisites
 
-### 1. Set Up Virtual Environment
+### 1. Install [Poetry](https://python-poetry.org/docs/#installation)
+
+If you don't have Poetry installed:
 
 ```bash
-# Navigate to the firebase-notifications directory
-cd <project-root>
+# macOS / Linux
+curl -sSL https://install.python-poetry.org | python3 -
 
-# Create virtual environment
-python3 -m venv venv
+# Alternatively, create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
 
-# Activate virtual environment
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-# or
-pip install -e ".[dev]"
+# And using pipx
+pipx install poetry
 ```
 
-> **Note:** Always activate the virtual environment before running the script.
+> **Note:** After installation, ensure Poetry is in your PATH. See [Poetry Installation](https://python-poetry.org/docs/#installation).
 
-### 2. Firebase Service Account
+### 2. Set Up the Project
+
+```bash
+cd <project-root>
+
+# Install dependencies (creates .venv automatically)
+poetry install
+
+# Activate the virtual environment
+poetry shell
+```
+
+> **Note:** Poetry automatically creates a `.venv` folder in your project (configured in `poetry.toml`).
+
+### 3. Firebase Service Account
 
 To authenticate a service account and authorize it to access Firebase services, you must generate a
 `service-account.json` private key file in **JSON** format.
@@ -91,23 +139,24 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your-service-account.json
 
 ## Usage
 
-### Activate Virtual Environment
+### Running with Poetry
 
-Before running any commands, activate the virtual environment:
+Before running commands, ensure you're in the Poetry environment:
 
 ```bash
 cd <project-root>
-source venv/bin/activate
-```
 
-To deactivate when done:
+# Option 1: Activate shell
+poetry shell
+fcm-send --info
 
-```bash
-deactivate
+# Option 2: Run directly with "poetry run"
+poetry run fcm-send --info
 ```
 
 > **Note:** Using a code editor (such as [VSCode](https://code.visualstudio.com) or [Cursor](https://cursor.com)) a Python Virtual Environment can be loaded automatically using [.vscode/settings.json](./.vscode/settings.json) configurations.
 > Open this folder as `${workspaceFolder}` and `settings.json` file mentioned above would be loaded!
+
 ---
 
 ### Pass Google Credentials `.json` file
@@ -331,22 +380,47 @@ firebase-cloud-messaging/
 │       ├── cli.py           # CLIHandler and main() entry point
 │       └── py.typed         # PEP 561 marker for type checking
 ├── tests/                   # Test suite (58 tests)
-├── pyproject.toml           # Package configuration (uses hatchling)
+├── pyproject.toml           # Poetry configuration
+├── poetry.toml              # Poetry settings (in-project venv)
+├── poetry.lock              # Locked dependencies
 ├── LICENSE                  # MIT License
-├── README.md                # This file
-└── requirements.txt         # Legacy dependencies file
+└── README.md                # This file
 ```
 
 ### Installation for Development
 
+#### Using Poetry (Recommended)
+
 ```bash
 git clone https://github.com/mfdeveloper/firebase_cloud_messaging_cli.git
-cd <project-root>
+cd firebase_cloud_messaging_cli
 
-# Activate virtual environment
-source venv/bin/activate
-# Install dependencies
-pip install -e ".[dev]"
+# Install all dependencies (creates .venv automatically)
+poetry install
+
+# Activate the virtual environment
+poetry shell
+
+# Or run commands directly
+poetry run fcm-send --version
+poetry run pytest
+```
+
+#### Using pip (Alternative)
+
+```bash
+git clone https://github.com/mfdeveloper/firebase_cloud_messaging_cli.git
+cd firebase_cloud_messaging_cli
+
+# Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install from requirements.txt
+pip install -r requirements.txt
+
+# Or install the package in editable mode
+pip install -e .
 ```
 
 ### Unit Testing
@@ -355,13 +429,13 @@ The project includes a comprehensive test suite with **58 unit tests** achieving
 
 ```bash
 # Run all tests
-pytest
+poetry run pytest
 
 # Run with coverage terminal report
-pytest --cov=src/fcm_send --cov-report=term-missing
+poetry run pytest --cov=src/fcm_send --cov-report=term-missing
 
 # Run tests with coverage (HTML report)
-pytest --cov=src/fcm_send --cov-report=html
+poetry run pytest --cov=src/fcm_send --cov-report=html
 ```
 
 For detailed testing documentation, including test breakdown, fixtures, and mocking strategy, see:
@@ -375,17 +449,14 @@ This project uses [Pylint](https://pylint.readthedocs.io/) for static code analy
 ### Running Pylint
 
 ```bash
-# Activate virtual environment
-source venv/bin/activate
-
 # Lint source package only
-pylint src/fcm_send/
+poetry run pylint src/fcm_send/
 
 # Lint source package and tests
-pylint src/fcm_send/ tests/
+poetry run pylint src/fcm_send/ tests/
 
 # Lint tests only
-pylint tests/
+poetry run pylint tests/
 ```
 
 ### Configuration
@@ -400,33 +471,40 @@ To check your current score:
 
 ```bash
 # Output: Your code has been rated at X.XX/10
-pylint src/fcm_send/ tests/
+poetry run pylint src/fcm_send/ tests/
 ```
 
 ## Publishing to PyPI
 
-### 1. Update Package Metadata
+This project uses **Poetry** for building and publishing packages.
 
-Before publishing, edit `pyproject.toml` to set your author information and repository URLs:
+### 1. Update Version
+
+Update the version in `pyproject.toml`:
 
 ```toml
-authors = [
-    { name = "Your Name", email = "your.email@example.com" }
-]
+[tool.poetry]
+version = "0.2.0"
+```
 
-[project.urls]
-Homepage = "https://github.com/mfdeveloper/firebase_cloud_messaging_cli"
-Repository = "https://github.com/mfdeveloper/firebase_cloud_messaging_cli"
+Or use Poetry's version command:
+
+```bash
+# Bump patch version (0.1.0 → 0.1.1)
+poetry version patch
+
+# Bump minor version (0.1.0 → 0.2.0)
+poetry version minor
+
+# Bump major version (0.1.0 → 1.0.0)
+poetry version major
 ```
 
 ### 2. Build the Package
 
 ```bash
-# Activate virtual environment
-source venv/bin/activate
-
 # Build both sdist and wheel
-python -m build
+poetry build
 ```
 
 This creates distribution files in the `dist/` directory:
@@ -447,21 +525,27 @@ This project includes a GitHub Actions workflow for automated publishing to Test
 
 **One-time Setup:**
 1. Create a [TestPyPI account](https://test.pypi.org/account/register/)
-2. Configure [Trusted Publishing](https://test.pypi.org/manage/account/publishing/):
-   - Click "Add a new pending publisher"
-   - **PyPI Project Name**: `fcm-send`
-   - **Owner**: Your GitHub username
-   - **Repository**: `firebase_cloud_messaging_cli`
-   - **Workflow name**: `publish-testpypi.yml`
-   - **Environment**: `testpypi`
+2. Generate an API token at [TestPyPI API Tokens](https://test.pypi.org/manage/account/#api-tokens)
+3. Add the token as a GitHub secret:
+   - Go to your repository **Settings** → **Secrets and variables** → **Actions**
+   - Create a new secret named `TEST_PYPI_API_TOKEN` with your token
 
-#### Option B: Manual Upload
+#### Option B: Manual Upload with Poetry
 
 ```bash
-# Upload to Test PyPI
+# Configure TestPyPI repository
+poetry config repositories.testpypi https://test.pypi.org/legacy/
+
+# Set your TestPyPI token
+poetry config pypi-token.testpypi pypi-XXXXXXXXXXXX
+
+# Publish to TestPyPI
+poetry publish --repository testpypi
+
+# Alternatively, you can use regular "Twine" for publishing
 twine upload --repository testpypi dist/*
 
-# Test installation from Test PyPI
+# Test installation from TestPyPI
 pip install --index-url https://test.pypi.org/simple/ \
   --extra-index-url https://pypi.org/simple/ \
   fcm-send
@@ -480,39 +564,61 @@ This project includes a GitHub Actions workflow for automated publishing to PyPI
 **Trigger:**
 - Push a `pypi-*` tag:
   ```bash
-  git tag -a pypi-0.1.0 -m "My PyPI package version"
+  git tag -a pypi-0.1.0 -m "Release version 0.1.0"
   git push origin pypi-0.1.0
   ```
 
 **One-time Setup:**
 1. Create a [PyPI account](https://pypi.org/account/register/)
-2. Configure [Trusted Publishing](https://pypi.org/manage/account/publishing/):
-   - Click "Add a new pending publisher"
-   - **PyPI Project Name**: `fcm-send`
-   - **Owner**: Your GitHub username
-   - **Repository**: `firebase_cloud_messaging_cli`
-   - **Workflow name**: `publish-pypi.yml`
-   - **Environment**: `pypi`
+2. Generate an API token at [PyPI API Tokens](https://pypi.org/manage/account/#api-tokens)
+3. Add the token as a GitHub secret:
+   - Go to your repository **Settings** → **Secrets and variables** → **Actions**
+   - Create a new secret named `PYPI_API_TOKEN` with your token
 
-#### Option B: Manual Upload
+#### Option B: Manual Upload with Poetry
 
 ```bash
+# Set your PyPI token
+poetry config pypi-token.pypi pypi-XXXXXXXXXXXX
+
+# Publish to PyPI
+poetry publish
+
+# Alternatively, you can use regular "Twine" for publishing
 twine upload dist/*
 ```
-
-> **Note:** You'll need to create an account at [pypi.org](https://pypi.org) and generate an API token.
-> Store your token in `~/.pypirc` or use `twine upload --username __token__ --password <your-token> dist/*`
 
 ### 5. After Publishing
 
 Users can install your package with:
 
 ```bash
+poetry add fcm-send
+# or
 pip install fcm-send
 ```
 
+## Poetry Commands Reference
+
+| Command                     | Description                                    |
+|-----------------------------|------------------------------------------------|
+| `poetry install`            | Install all dependencies                       |
+| `poetry install --extras dev` | Install with dev dependencies                |
+| `poetry shell`              | Activate the virtual environment               |
+| `poetry run <cmd>`          | Run a command in the virtual environment       |
+| `poetry add <pkg>`          | Add a dependency                               |
+| `poetry add --group dev <pkg>` | Add a dev dependency                        |
+| `poetry remove <pkg>`       | Remove a dependency                            |
+| `poetry update`             | Update dependencies to latest versions         |
+| `poetry lock`               | Update poetry.lock without installing          |
+| `poetry build`              | Build sdist and wheel                          |
+| `poetry publish`            | Publish to PyPI                                |
+| `poetry version <rule>`     | Bump version (patch, minor, major)             |
+| `poetry show`               | Show installed packages                        |
+| `poetry env info`           | Show virtualenv info                           |
 
 ## References
 
+- [Poetry Documentation](https://python-poetry.org/docs/)
 - [FCM: Retrieve the current registration token](https://firebase.google.com/docs/cloud-messaging/get-started?platform=android#retrieve-the-current-registration-token)
 - [Firebase Admin SDK: Initialize in non-Google environments](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments)

@@ -4,6 +4,7 @@
 # This workflow builds and publishes the package to the official PyPI.
 #
 # Triggers:
+#   - Manual dispatch (workflow_dispatch)
 #   - Push tag matching 'pypi-*' (e.g., pypi-0.1.0, pypi-1.0.0)
 #
 # Setup Required:
@@ -16,7 +17,7 @@
 #      - Environment: pypi (recommended)
 #
 # Usage:
-#   git tag pypi-0.1.0
+#   git tag -a pypi-0.1.0 -m "Release version 0.1.0"
 #   git push origin pypi-0.1.0
 # =============================================================================
 
@@ -38,24 +39,20 @@ jobs:
     uses: ./.github/workflows/build.yml
 
   publish-pypi:
-    name: Publish to PyPI 🚀
+    name: Publish to PyPI 🚀 (Trusted)
     needs: build
     runs-on: ubuntu-latest
-    
     environment:
       name: pypi
       url: https://pypi.org/p/fcm-send
-
     permissions:
-      id-token: write  # Required for trusted publishing
-
+      id-token: write
     steps:
       - name: Download distribution artifacts
         uses: actions/download-artifact@v4
         with:
           name: python-package-distributions
           path: dist/
-
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
@@ -68,7 +65,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
 
       - name: Wait for package to be available
         run: sleep 60
@@ -80,4 +77,3 @@ jobs:
         run: |
           fcm-send --version
           python -c "from fcm_send import FCMClient, __version__; print(f'✅ Published successfully: v{__version__}')"
-

@@ -25,7 +25,7 @@ tests/
 
 | Module | Coverage |
 |--------|----------|
-| `src/fcm_send/` | 97% |
+| `src/fcm_send/` | 98% |
 | `test_fcm_client.py` | 100% |
 | `test_cli_handler.py` | 100% |
 
@@ -129,69 +129,63 @@ tests/
 
 ### Prerequisites
 
-1. Activate the virtual environment:
+1. Install dependencies with [Poetry](https://python-poetry.org/docs/#installation):
 
 ```bash
-cd scripts/firebase-notifications
-source venv/bin/activate
-```
-
-2. Ensure test dependencies are installed:
-
-```bash
-pip install -r requirements.txt
+cd <project-root>
+poetry install
 ```
 
 ### Run All Tests
 
 ```bash
-pytest
+poetry run pytest
 ```
 
 ### Run with Verbose Output
 
 ```bash
-pytest -v
+poetry run pytest -v
 ```
 
 ### Run with Coverage Report
 
 ```bash
 # Terminal report
-pytest --cov=. --cov-report=term-missing
+poetry run pytest --cov=src/fcm_send --cov-report=term-missing
 
 # HTML report (generates htmlcov/ directory)
-pytest --cov=. --cov-report=html
+poetry run pytest --cov=src/fcm_send --cov-report=html
 ```
 
 ### Run Specific Test File
 
 ```bash
-pytest tests/test_fcm_client.py
-pytest tests/test_cli_handler.py
+poetry run pytest tests/test_fcm_client.py
+poetry run pytest tests/test_cli_handler.py
 ```
 
 ### Run Specific Test Class
 
 ```bash
-pytest tests/test_fcm_client.py::TestFCMClientCredentials
-pytest tests/test_cli_handler.py::TestCLIHandlerParser
+poetry run pytest tests/test_fcm_client.py::TestFCMClientCredentials
+poetry run pytest tests/test_cli_handler.py::TestCLIHandlerParser
 ```
 
 ### Run Specific Test
 
 ```bash
-pytest tests/test_fcm_client.py::TestFCMClientCredentials::test_credentials_path_from_cli_argument
+poetry run pytest tests/test_fcm_client.py::TestFCMClientCredentials::test_credentials_path_from_cli_argument
 ```
 
 ### Run Tests Matching Pattern
 
 ```bash
 # Run all tests with "notification" in the name
-pytest -k "notification"
+poetry run pytest -k "notification"
 
 # Run all tests with "dry_run" in the name
-pytest -k "dry_run"
+poetry run pytest -k "dry_run"
 ```
 
 ## Fixtures
@@ -254,7 +248,7 @@ The project includes a GitHub Actions workflow (`.github/workflows/tests.yml`) t
 
 | Job | Description |
 |-----|-------------|
-| `test` | Runs pytest with coverage across Python 3.9-3.13 |
+| `test` | Runs pytest with coverage across Python 3.9-3.13 using Poetry |
 | `lint` | Runs pylint with minimum score threshold of 8.0 |
 
 ### Running the Workflow Locally
@@ -280,7 +274,7 @@ You can run the GitHub Actions workflow locally using [act](https://github.com/n
 
 ```bash
 # Navigate to project root
-cd /path/to/firebase-cloud-message
+cd <project-root>
 
 # Run the entire workflow (all jobs)
 act
@@ -330,9 +324,8 @@ For this project, the **Medium** image is recommended.
 
 ```bash
 # Quick test run (single Python version)
-act -j test --matrix python-version:3.12
+act -j test --matrix python-version:3.13
 
 # Full matrix test (all Python versions)
 act -j test
 ```
-

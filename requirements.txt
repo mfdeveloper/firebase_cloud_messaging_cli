@@ -1,11 +1,21 @@
 # =============================================================================
-# FCM Notification Sender - Dependencies
+# FCM Notification Sender - Dependencies (Legacy)
 # =============================================================================
-# This file references pyproject.toml as the single source of truth.
+# This project uses Poetry for dependency management.
 #
-# Install with: pip install -r requirements.txt
-# Or directly:  pip install -e ".[dev]"
+# Recommended: Use Poetry instead
+#   poetry install          # Install all dependencies
+#   poetry install --with dev  # Include dev dependencies
+#
+# For pip users, this file is auto-generated from pyproject.toml:
+#   poetry export -f requirements.txt --output requirements.txt
+#
+# Install with pip:
+#   pip install -r requirements.txt
 # =============================================================================
 
-# Install the package in editable mode with all dev dependencies
--e ".[dev]"
+# Core dependencies
+firebase-admin>=6.0.0
+
+# Dev dependencies (install with: pip install -r requirements-dev.txt)
+# Or use: poetry install --with dev

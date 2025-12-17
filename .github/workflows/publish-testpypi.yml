@@ -35,24 +35,20 @@ jobs:
     uses: ./.github/workflows/build.yml
 
   publish-testpypi:
-    name: Publish to TestPyPI 🧪
+    name: Publish to TestPyPI 🧪 (Trusted)
     needs: build
     runs-on: ubuntu-latest
-    
     environment:
       name: testpypi
       url: https://test.pypi.org/p/fcm-send
-
     permissions:
-      id-token: write  # Required for trusted publishing
-
+      id-token: write
     steps:
       - name: Download distribution artifacts
         uses: actions/download-artifact@v4
         with:
           name: python-package-distributions
           path: dist/
-
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -67,7 +63,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
 
       - name: Wait for package to be available
         run: sleep 30

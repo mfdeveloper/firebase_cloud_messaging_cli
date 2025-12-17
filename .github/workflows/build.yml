@@ -1,7 +1,7 @@
 # =============================================================================
 # Build Package - GitHub Actions Workflow
 # =============================================================================
-# Builds the Python package distribution (sdist and wheel).
+# Builds the Python package distribution (sdist and wheel) using Poetry.
 #
 # This workflow can be:
 #   - Run manually via workflow_dispatch
@@ -41,15 +41,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
 
-      - name: Install build dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install build
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
-      - name: Build package
-        run: python -m build
+      - name: Build package with Poetry
+        run: poetry build
 
       - name: Set artifact name
         id: set-artifact-name
@@ -63,4 +65,3 @@ jobs:
 
       - name: List built packages
         run: ls -la dist/
-

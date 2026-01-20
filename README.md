@@ -7,6 +7,7 @@ A Kotlin CLI tool for sending [Firebase Cloud Messaging (FCM)](https://firebase.
 [![Kotlin 1.9+](https://img.shields.io/badge/kotlin-1.9+-blue.svg)](https://kotlinlang.org/)
 [![Java 17+](https://img.shields.io/badge/java-17+-orange.svg)](https://www.oracle.com/java/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![JitPack](https://jitpack.io/v/mfdeveloper/firebase-cloud-messaging.svg)](https://jitpack.io/#mfdeveloper/firebase-cloud-messaging)
 
 ## Requirements
 
@@ -319,6 +320,92 @@ Pre-configured IntelliJ run configurations are available in `.idea/runConfigurat
 
 To use: Open the project in IntelliJ IDEA → Run → Select configuration from dropdown.
 
+## Use as a Library (JitPack)
+
+[![](https://jitpack.io/v/mfdeveloper/firebase-cloud-messaging.svg)](https://jitpack.io/#mfdeveloper/firebase-cloud-messaging)
+
+You can use this project as a Gradle/Maven dependency via [JitPack](https://jitpack.io/).
+
+### Gradle (Kotlin DSL)
+
+```kotlin
+// settings.gradle.kts or build.gradle.kts
+repositories {
+    mavenCentral()
+    maven { url = uri("https://jitpack.io") }
+}
+
+// build.gradle.kts
+dependencies {
+    implementation("com.github.mfdeveloper:firebase_cloud_messaging_cli:kotlin-0.1.1")
+}
+```
+
+### Gradle (Groovy)
+
+```groovy
+// settings.gradle or build.gradle
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+// build.gradle
+dependencies {
+    implementation 'com.github.mfdeveloper/firebase_cloud_messaging_cli:kotlin-0.1.1'
+    // Optionally, use the SNAPSHOT branch
+    implementation 'com.github.mfdeveloper/firebase_cloud_messaging_cli:kotlin-cli-SNAPSHOT'
+}
+```
+
+### Maven
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependency>
+    <groupId>com.github.mfdeveloper</groupId>
+    <artifactId>firebase-cloud-messaging</artifactId>
+    <version>0.1.1</version>
+</dependency>
+```
+
+### Library Usage Example
+
+```kotlin
+import com.mfdeveloper.fcm.FCMClient
+import com.mfdeveloper.fcm.AccessTokenType
+
+// Create client with credentials file
+val client = FCMClient("/path/to/service-account.json")
+
+// Send a notification
+val messageId = client.sendNotification(
+    fcmToken = "device_fcm_token",
+    title = "Hello",
+    body = "World",
+    data = mapOf("key" to "value")
+)
+println("Message sent: $messageId")
+
+// Send a data-only message
+val dataMessageId = client.sendDataMessage(
+    fcmToken = "device_fcm_token",
+    data = mapOf("action" to "sync", "id" to "123")
+)
+
+// Get access token
+val accessToken = client.getAccessToken()
+
+// Show service account info
+client.showInfo(AccessTokenType.FIREBASE_ADMIN)
+```
+
 ## Dependencies
 
 | Dependency              | Version | Purpose                           |
@@ -342,8 +429,34 @@ To use: Open the project in IntelliJ IDEA → Run → Select configuration from 
 | `./gradlew run --args="..."`             | Run the application with arguments       |
 | `./gradlew fatJar`                       | Create fat JAR with all dependencies     |
 | `./gradlew runScript -PscriptArgs="..."` | Run the Kotlin script (.kts)             |
+| `./gradlew publishToMavenLocal`          | Publish to local Maven repository        |
 | `./gradlew clean`                        | Clean build directory                    |
 | `./gradlew dependencies`                 | Show project dependencies                |
+
+### Publishing to Local Maven Repository
+
+To use this library in other local projects before publishing to JitPack:
+
+```bash
+# Publish to ~/.m2/repository
+./gradlew publishToMavenLocal
+```
+
+Then in your other project, add the `mavenLocal()` repository:
+
+```kotlin
+// build.gradle.kts
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.mfdeveloper.fcm:fcm-send:0.1.1")
+    // Optionally, use the branch-SNAPSHOT as version
+    implementation("com.mfdeveloper.fcm:fcm-send:kotlin-cli-SNAPSHOT")
+}
+```
 
 ## CI/CD
 
@@ -351,8 +464,9 @@ GitHub Actions workflows are available for automated testing and building:
 
 | Workflow | File | Description |
 |----------|------|-------------|
-| **Kotlin > Tests** | `.github/workflows/kotlin-tests.yml` | Runs tests with coverage on push/PR |
-| **Kotlin > Build** | `.github/workflows/kotlin-build.yml` | Builds the project and fat JAR |
+| **Kotlin > Tests** | `.github/workflows/tests.yml` | Runs tests with coverage on push/PR |
+| **Kotlin > Build** | `.github/workflows/build.yml` | Builds the project and fat JAR |
+| **Kotlin > Integration Test** | `.github/workflows/kotlin-integration.yml` | Tests the library as a dependency |
 
 ### Test Workflow
 
@@ -370,6 +484,13 @@ Can be triggered manually or called by other workflows:
 - Builds the project with Gradle
 - Creates the fat JAR distribution
 - Uploads JARs as artifacts
+
+### Integration Test Workflow
+
+Verifies the library can be consumed as a dependency:
+
+- **Test as Library Dependency**: Creates a temporary consumer project that imports and uses the library classes (`FCMClient`, `AccessTokenType`, `EnvironmentException`)
+- **Simulate JitPack Build**: Publishes to Maven Local and verifies all required artifacts are generated (JAR, POM, sources)
 
 ## References
 

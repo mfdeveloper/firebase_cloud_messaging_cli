@@ -1,0 +1,14 @@
+# JitPack Configuration
+# https://jitpack.io/docs/BUILDING/
+
+# Use JDK 17 for building
+jdk:
+  - openjdk17
+
+# Build commands (optional - JitPack auto-detects Gradle)
+# install:
+#   - ./gradlew publishToMavenLocal
+
+# Before install commands (optional)
+before_install:
+  - chmod +x gradlew

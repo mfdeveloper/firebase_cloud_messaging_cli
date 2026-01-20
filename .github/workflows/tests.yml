@@ -9,8 +9,11 @@
 name: Kotlin > Tests
 
 on:
+  # Allow manual trigger
+  workflow_dispatch:
+
   push:
-    branches: [main, master]
+    branches: [kotlin-cli]
     paths:
       - 'src/main/kotlin/**'
       - 'src/test/kotlin/**'
@@ -19,7 +22,7 @@ on:
       - 'gradle/**'
       - '.github/workflows/kotlin-*.yml'
   pull_request:
-    branches: [main, master]
+    branches: [kotlin-cli]
     paths:
       - 'src/main/kotlin/**'
       - 'src/test/kotlin/**'
@@ -27,7 +30,6 @@ on:
       - 'settings.gradle.kts'
       - 'gradle/**'
       - '.github/workflows/kotlin-*.yml'
-  workflow_dispatch: # Allow manual trigger
 
 jobs:
   test:
@@ -92,7 +94,7 @@ jobs:
           path: build/reports/tests/test/
 
   lint:
-    name: Lint & Static Analysis
+    name: Build & Compile
     runs-on: ubuntu-latest
 
     steps:

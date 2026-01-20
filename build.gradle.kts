@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version "1.9.22"
     application
     jacoco
+    `maven-publish`
 }
 
 group = "com.mfdeveloper.fcm"
@@ -205,6 +206,9 @@ java {
 // Run the Kotlin script (.kts) using Gradle
 tasks.register<Exec>("runScript") {
     description = "Run the fcm-send.main.kts script"
+    
+    // Depend on fatJar since the script imports the compiled JAR
+    dependsOn("fatJar")
     group = "application"
     
     val scriptArgs = project.findProperty("scriptArgs")?.toString()?.split(" ") ?: listOf("--help")
@@ -214,10 +218,10 @@ tasks.register<Exec>("runScript") {
     // Try to find kotlin in common locations or use the bundled one
     val kotlinHome = System.getenv("KOTLIN_HOME")
     val kotlinCmd = when {
-        kotlinHome != null -> "$kotlinHome/bin/kotlin"
-        file("/usr/local/bin/kotlin").exists() -> "/usr/local/bin/kotlin"
-        file("/opt/homebrew/bin/kotlin").exists() -> "/opt/homebrew/bin/kotlin"
-        else -> "kotlin" // Fallback to PATH
+        kotlinHome != null -> "$kotlinHome/bin/kotlinc"
+        file("/usr/local/bin/kotlinc").exists() -> "/usr/local/bin/kotlinc"
+        file("/opt/homebrew/bin/kotlinc").exists() -> "/opt/homebrew/bin/kotlinc"
+        else -> "kotlinc" // Fallback to PATH
     }
     
     commandLine = listOf(kotlinCmd, "-script", "fcm-send.main.kts", "--") + scriptArgs
@@ -250,3 +254,59 @@ tasks.register<Jar>("fatJar") {
     }
 }
 
+// =============================================================================
+// JitPack / Maven Publishing Configuration
+// =============================================================================
+
+// Sources JAR for publishing
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
+}
+
+// Javadoc JAR (empty for Kotlin, but required by some repositories)
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+    from(tasks.named("javadoc"))
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = project.group.toString()
+            artifactId = "fcm-send"
+            version = project.version.toString()
+            
+            from(components["java"])
+            
+            artifact(sourcesJar)
+            artifact(javadocJar)
+            
+            pom {
+                name.set("FCM Send")
+                description.set("Firebase Cloud Messaging CLI and library for sending push notifications")
+                url.set("https://github.com/mfdeveloper/firebase_cloud_messaging_cli")
+                
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                
+                developers {
+                    developer {
+                        id.set("mfdeveloper")
+                        name.set("MF Developer")
+                    }
+                }
+                
+                scm {
+                    connection.set("scm:git:git://github.com/mfdeveloper/firebase_cloud_messaging_cli.git")
+                    developerConnection.set("scm:git:ssh://github.com/mfdeveloper/firebase_cloud_messaging_cli.git")
+                    url.set("https://github.com/mfdeveloper/firebase_cloud_messaging_cli")
+                }
+            }
+        }
+    }
+}

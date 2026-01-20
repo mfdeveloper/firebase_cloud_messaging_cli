@@ -1,0 +1,12 @@
+{
+    "editor.fontFamily": "JetBrains Mono, Consolas, 'Courier New', monospace",
+    "editor.lineHeight": 22,
+    "editor.fontWeight": "300",
+    "editor.semanticHighlighting.enabled": true,
+    "workbench.colorTheme": "Visual Studio 2019 Dark",
+    "theme-by-language.themes": {
+        "*": "Visual Studio 2019 Dark",
+        "kotlin": "JetBrains Dark Theme",
+    },
+    "java.compile.nullAnalysis.mode": "automatic",
+}

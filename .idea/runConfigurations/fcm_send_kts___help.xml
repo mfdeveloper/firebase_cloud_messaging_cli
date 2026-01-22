@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="fcm-send.kts --help" type="KotlinStandaloneScriptRunConfigurationType">
+    <module name="fcm-send.main" />
+    <option name="PROGRAM_PARAMETERS" value="-- --help" />
+    <shortenClasspath name="NONE" />
+    <option name="filePath" value="$PROJECT_DIR$/fcm-send.main.kts" />
+    <method v="2">
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="fatJar" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="" />
+    </method>
+  </configuration>
+</component>

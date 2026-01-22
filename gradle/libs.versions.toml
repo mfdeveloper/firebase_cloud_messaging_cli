@@ -1,0 +1,51 @@
+# =============================================================================
+# Gradle Version Catalog
+# =============================================================================
+# Centralized dependency management for the project.
+# Reference: https://docs.gradle.org/current/userguide/platforms.html
+# =============================================================================
+
+[versions]
+# Kotlin
+kotlin = "1.9.22"
+
+# Firebase
+firebase-admin = "9.7.0"
+
+# JSON
+gson = "2.10.1"
+
+# CLI
+clikt = "4.2.2"
+
+# Testing
+junit-jupiter = "5.10.1"
+mockk = "1.13.9"
+assertj = "3.25.1"
+
+[libraries]
+# Firebase Admin SDK
+firebase-admin = { group = "com.google.firebase", name = "firebase-admin", version.ref = "firebase-admin" }
+
+# JSON parsing
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+# CLI argument parsing
+clikt = { group = "com.github.ajalt.clikt", name = "clikt", version.ref = "clikt" }
+
+# Kotlin standard library
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+
+# Testing libraries
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit-jupiter" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
+
+[bundles]
+# Bundle for all test dependencies
+testing = ["kotlin-test", "junit-jupiter", "mockk", "assertj-core"]
+
+[plugins]
+# Kotlin JVM plugin
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

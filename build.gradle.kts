@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.22"
+    alias(libs.plugins.kotlin.jvm)
     application
     jacoco
     `maven-publish`
@@ -16,22 +16,19 @@ repositories {
 
 dependencies {
     // Firebase Admin SDK
-    implementation("com.google.firebase:firebase-admin:9.2.0")
+    implementation(libs.firebase.admin)
     
     // JSON parsing
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(libs.gson)
     
     // CLI argument parsing
-    implementation("com.github.ajalt.clikt:clikt:4.2.2")
+    implementation(libs.clikt)
     
     // Kotlin standard library
-    implementation(kotlin("stdlib"))
+    implementation(libs.kotlin.stdlib)
     
-    // Testing
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
-    testImplementation("io.mockk:mockk:1.13.9")
-    testImplementation("org.assertj:assertj-core:3.25.1")
+    // Testing (using bundle for all test dependencies)
+    testImplementation(libs.bundles.testing)
 }
 
 application {

@@ -166,21 +166,27 @@ val dataResponse = client.sendDataMessage(
 ```shell
 firebase-cloud-messaging/
 ├── src/
-│   ├── main/kotlin/com/fcm/
+│   ├── main/kotlin/com/mfdeveloper/fcm/
 │   │   ├── AccessTokenType.kt   # Enum for token types
 │   │   ├── FCMClient.kt         # Firebase client class
 │   │   ├── CLIHandler.kt        # CLI command handler
 │   │   └── Main.kt              # Entry point
-│   └── test/kotlin/com/fcm/
+│   └── test/kotlin/com/mfdeveloper/fcm/
 │       ├── FCMClientTest.kt     # Client unit tests
 │       ├── CLIHandlerTest.kt    # CLI unit tests
 │       └── MainTest.kt          # Main entry tests
+├── lib-consumer-test/               # Standalone consumer test project
+│   ├── build.gradle.kts         # Consumer Gradle config
+│   ├── settings.gradle.kts      # Consumer settings
+│   └── src/main/kotlin/         # Test app that imports library
 ├── build.gradle.kts             # Gradle build configuration
 ├── settings.gradle.kts          # Gradle settings
 ├── gradlew                      # Gradle wrapper (Unix)
 ├── gradlew.bat                  # Gradle wrapper (Windows)
-└── gradle/wrapper/
-    └── gradle-wrapper.properties
+└── gradle/
+    ├── wrapper/
+    │   └── gradle-wrapper.properties
+    └── libs.versions.toml       # Version catalog
 ```
 
 ### Running Tests
@@ -489,8 +495,29 @@ Can be triggered manually or called by other workflows:
 
 Verifies the library can be consumed as a dependency:
 
-- **Test as Library Dependency**: Creates a temporary consumer project that imports and uses the library classes (`FCMClient`, `AccessTokenType`, `EnvironmentException`)
+- **Test as Library Dependency**: Uses the `lib-consumer-test/` project to verify library imports work correctly (`FCMClient`, `AccessTokenType`, `EnvironmentException`)
 - **Simulate JitPack Build**: Publishes to Maven Local and verifies all required artifacts are generated (JAR, POM, sources)
+
+### Consumer Test Project
+
+A standalone Kotlin/JVM project is included at `lib-consumer-test/` for testing the library as a dependency. You can open it directly in Android Studio or IntelliJ IDEA.
+
+```bash
+# First, publish the library to Maven Local
+./gradlew publishToMavenLocal
+
+# Then run the consumer test
+cd lib-consumer-test
+./gradlew run
+```
+
+The consumer test project demonstrates:
+
+- Importing `FCMClient`, `AccessTokenType`, and `EnvironmentException`
+- Verifying classes can be instantiated
+- Confirming enums and exceptions are accessible
+
+See `lib-consumer-test/README.md` for more details.
 
 ## References
 

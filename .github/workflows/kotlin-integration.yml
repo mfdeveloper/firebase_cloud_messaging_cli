@@ -2,7 +2,7 @@
 # Kotlin Integration Test - GitHub Actions Workflow
 # =============================================================================
 # Tests that the library can be consumed as a dependency by other projects.
-# Creates a temporary consumer project and verifies imports work correctly.
+# Uses the lib-consumer-test/ project to verify imports work correctly.
 #
 # Run locally with: act -W .github/workflows/kotlin-integration.yml
 # =============================================================================
@@ -16,6 +16,7 @@ on:
       - 'src/main/kotlin/**'
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
+      - 'lib-consumer-test/**'
       - '.github/workflows/kotlin-integration.yml'
   pull_request:
     branches: [kotlin-cli]
@@ -23,6 +24,7 @@ on:
       - 'src/main/kotlin/**'
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
+      - 'lib-consumer-test/**'
       - '.github/workflows/kotlin-integration.yml'
   workflow_dispatch: # Allow manual trigger
 
@@ -50,97 +52,21 @@ jobs:
       - name: Publish to Maven Local
         run: ./gradlew publishToMavenLocal
 
-      - name: Create consumer test project
+      - name: Prepare consumer test project
         run: |
-          mkdir -p consumer-test/src/main/kotlin
-          
-          # Create settings.gradle.kts
-          cat > consumer-test/settings.gradle.kts << 'EOF'
-          rootProject.name = "fcm-consumer-test"
-          EOF
-          
-          # Create build.gradle.kts
-          cat > consumer-test/build.gradle.kts << 'EOF'
-          plugins {
-              kotlin("jvm") version "1.9.22"
-              application
-          }
-          
-          group = "com.example"
-          version = "1.0.0"
-          
-          repositories {
-              mavenLocal()
-              mavenCentral()
-          }
-          
-          dependencies {
-              implementation("com.mfdeveloper.fcm:fcm-send:0.1.1")
-          }
-          
-          application {
-              mainClass.set("com.example.MainKt")
-          }
-          
-          kotlin {
-              jvmToolchain(17)
-          }
-          EOF
-          
-          # Create test Kotlin file that imports and uses the library
-          cat > consumer-test/src/main/kotlin/Main.kt << 'EOF'
-          package com.example
-          
-          import com.mfdeveloper.fcm.FCMClient
-          import com.mfdeveloper.fcm.AccessTokenType
-          import com.mfdeveloper.fcm.EnvironmentException
-          
-          fun main() {
-              println("Testing FCM library imports...")
-              
-              // Test 1: Verify classes can be instantiated
-              try {
-                  val client = FCMClient("/nonexistent/path.json")
-                  println("✓ FCMClient class instantiated")
-              } catch (e: Exception) {
-                  println("✓ FCMClient class loaded (expected exception for missing file)")
-              }
-              
-              // Test 2: Verify enum is accessible
-              val tokenType = AccessTokenType.FIREBASE_ADMIN
-              println("✓ AccessTokenType enum accessible: ${tokenType.value}")
-              
-              // Test 3: Verify exception class is accessible
-              val exception = EnvironmentException("Test exception")
-              println("✓ EnvironmentException class accessible: ${exception.message}")
-              
-              println()
-              println("═══════════════════════════════════════════════════")
-              println(" ✓ All library imports verified successfully!")
-              println("═══════════════════════════════════════════════════")
-          }
-          EOF
-          
-          # Copy gradle wrapper from main project
-          cp gradlew consumer-test/
-          cp gradlew.bat consumer-test/
-          mkdir -p consumer-test/gradle/wrapper
-          cp gradle/wrapper/gradle-wrapper.jar consumer-test/gradle/wrapper/
-          cp gradle/wrapper/gradle-wrapper.properties consumer-test/gradle/wrapper/
+          # The lib-consumer-test project is already in the repository
+          # Just ensure gradlew is executable
+          chmod +x lib-consumer-test/gradlew
 
       - name: Build consumer project
-        working-directory: consumer-test
+        working-directory: lib-consumer-test
         run: |
           chmod +x gradlew
           ./gradlew build
 
       - name: Run consumer project
-        working-directory: consumer-test
+        working-directory: lib-consumer-test
         run: ./gradlew run
-
-      - name: Cleanup
-        if: always()
-        run: rm -rf consumer-test
 
   jitpack-simulation:
     name: Simulate JitPack Build
